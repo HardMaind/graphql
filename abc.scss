@@ -1,0 +1,183 @@
+$w: 12rem;
+$d: $w/3;
+$l: 4px;
+$a: 1rem;
+$t: 1s;
+
+/*@property --cost {
+	syntax: '<integer>';
+	initial-value: 0;
+	inherits: true
+}*/
+
+* {
+  margin: 0;
+  border: none;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  text-transform: inherit;
+}
+
+body,
+body :not(script):not(style),
+::before {
+  display: grid;
+}
+
+body {
+  grid-gap: 2em;
+  grid-template-columns: repeat(auto-fit, Min(100%, $w));
+  place-content: center;
+  min-height: 100vh;
+  background: #222;
+  font: 900 1.25em/ 1.25 sans-serif;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+article {
+  --m: calc(0.5 * (var(--n) - 1));
+  --abs: Max(calc(var(--i) - var(--m)), calc(var(--m) - var(--i)));
+  --val: calc(var(--abs) * (1 + 0.5 * var(--i)) / var(--n));
+  --dt0: calc(var(--val) *#{$t});
+  --dt1: calc((var(--val) + 1) *#{$t});
+  --dt2: calc((var(--val) + 1.5) *#{$t});
+  --dt3: calc((var(--val) + 2) *#{$t});
+  --dt4: calc((var(--val) + 2.5) *#{$t});
+  --dt5: calc((var(--val) + 3) *#{$t});
+  overflow: hidden;
+  padding-bottom: $a;
+  backface-visibility: hidden;
+  transform: perspective(25em);
+  background: #fff content-box;
+  filter: drop-shadow(4px 4px 13px);
+  animation: card $t ease-out var(--dt0) backwards, cost $t var(--dt4) backwards;
+
+  ::before,
+  ::after,
+  button {
+    --j: 1;
+    --sgn-j: calc(2 * var(--j) - 1);
+    --not-j: calc(1 - var(--j));
+    --mask: linear-gradient(
+        calc(var(--sgn-j) * 90deg),
+        red 33.333%,
+        transparent 66.667%
+      )
+      calc(var(--not-j) * 100%) / 300%;
+  }
+}
+
+@keyframes card {
+  0% {
+    transform: perspective(25em) rotatey(0.5turn);
+  }
+}
+
+header {
+  grid-gap: $a;
+  padding: 2 * $a 0.5em $a;
+  transform-origin: 100% 100%;
+  background: linear-gradient(var(--grad));
+  color: #fff;
+  counter-reset: cost var(--cost);
+  animation: head $t ease-out var(--dt1) backwards;
+
+  &::before {
+    place-self: center;
+    place-content: center;
+    border: solid $l currentcolor;
+    width: $d;
+    height: $d;
+    border-radius: 50%;
+    animation: ring $t ease-out var(--dt3) backwards;
+    content: "$" counter(cost);
+  }
+
+  &::after {
+    height: $l;
+    background: currentcolor;
+    clip-path: inset(0 round $l);
+    animation: line $t ease-out var(--dt2) backwards;
+    content: "";
+  }
+}
+
+@keyframes head {
+  0% {
+    transform: translate(-100%) skewx(35deg);
+  }
+}
+
+@keyframes ring {
+  0% {
+    transform: scale(0);
+    opacity: 0;
+  }
+}
+
+//@keyframes cost { 0% { --cost: 0 } }
+
+@keyframes line {
+  0% {
+    clip-path: inset(0 50% round $l);
+  }
+}
+
+h3 {
+  &::before,
+  &::after {
+    place-self: center;
+    -webkit-mask: var(--mask);
+    mask: var(--mask);
+    animation: text $t ease-out var(--dt5) backwards;
+  }
+
+  &::before {
+    --j: 0;
+    animation-name: text, move;
+    content: attr(data-name);
+  }
+
+  &::after {
+    font-size: 0.6em;
+    font-weight: 100;
+    content: "subscription";
+  }
+}
+
+@keyframes move {
+  0% {
+    transform: translate(50%);
+  }
+}
+
+section {
+  margin-bottom: -$a;
+  border-bottom: solid $a transparent;
+  background-color: inherit;
+  clip-path: polygon(
+    0 0,
+    100% 0,
+    100% calc(100% - #{$a}),
+    50% 100%,
+    0 calc(100% - #{$a})
+  );
+}
+
+button {
+  place-content: center;
+  line-height: 3;
+  -webkit-mask: var(--mask);
+  mask: var(--mask);
+  cursor: pointer;
+  animation: text $t ease-out var(--dt2) backwards;
+}
+
+@keyframes text {
+  0% {
+    -webkit-mask-position: calc(var(--j) * 100%);
+    mask-position: calc(var(--j) * 100%);
+  }
+}
